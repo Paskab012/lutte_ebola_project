@@ -516,21 +516,6 @@ export function SymptomChecker() {
                   </a>
                 )}
 
-                {/* Recommendations */}
-                {state.riskAssessment.recommendations && state.riskAssessment.recommendations.length > 0 && (
-                  <div className="mb-6 p-5 rounded-2xl bg-bg-darker border border-border">
-                    <p className="text-xs font-black text-text-muted uppercase tracking-[0.15em] mb-3">{t('results.recommendations')}</p>
-                    <ul className="space-y-2">
-                      {state.riskAssessment.recommendations.map((rec, i) => (
-                        <li key={i} className="flex items-start gap-2.5 text-sm text-text-secondary">
-                          <span className="w-1.5 h-1.5 rounded-full bg-secondary shrink-0 mt-1.5" />
-                          {rec}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-
                 {/* Alert note */}
                 {state.riskAssessment.requiresImmediateAction && (
                   <div className="flex items-start gap-3 p-4 rounded-xl bg-danger/6 border border-danger/20 mb-6">
