@@ -19,9 +19,8 @@ export interface SubmitReportRequest {
   readonly travelToAffectedArea: boolean;
   readonly durationDays: number;
   readonly profileVisibility: SymptomReportData['personalInfo']['profileVisibility'];
-  readonly fullName: string | null;
-  readonly phoneNumber: string | null;
   readonly location: LocationInfo;
+  readonly riskAssessment: RiskAssessment;
 }
 
 export interface SubmitReportResponse {

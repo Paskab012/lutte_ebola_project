@@ -20,15 +20,11 @@ export function useSubmitReport() {
         durationDays: variables.durationDays,
         personalInfo: {
           profileVisibility: variables.profileVisibility,
-          fullName: variables.fullName,
-          phoneNumber: variables.phoneNumber,
+          fullName: null,
+          phoneNumber: null,
         },
         location: variables.location,
-        riskAssessment: {
-          level: 'high',
-          score: 0,
-          requiresImmediateAction: true,
-        },
+        riskAssessment: variables.riskAssessment,
         createdAt: new Date().toISOString(),
         status: 'pending',
       };

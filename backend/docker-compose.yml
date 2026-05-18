@@ -1,0 +1,62 @@
+version: '3.9'
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: lutte_ebola_api
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - '${PORT:-3001}:3001'
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - lutte_network
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: lutte_ebola_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-lutte_ebola}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me_in_production}
+      POSTGRES_DB: ${DB_NAME:-lutte_ebola_db}
+    ports:
+      - '${DB_PORT:-5432}:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${DB_USERNAME:-lutte_ebola} -d ${DB_NAME:-lutte_ebola_db}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lutte_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: lutte_ebola_pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@lutte-ebola.org
+      PGADMIN_DEFAULT_PASSWORD: pgadmin_password
+    ports:
+      - '5050:80'
+    depends_on:
+      - postgres
+    networks:
+      - lutte_network
+
+volumes:
+  postgres_data:
+
+networks:
+  lutte_network:
+    driver: bridge

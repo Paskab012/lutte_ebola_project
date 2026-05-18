@@ -78,7 +78,7 @@ export function useSymptomAnalysis() {
     setState((prev) => ({ ...prev, currentStep: step }));
   }, []);
 
-  const runAnalysis = useCallback(() => {
+  const runAnalysis = useCallback((onComplete?: (result: RiskAssessment) => void) => {
     setState((prev) => ({ ...prev, isAnalyzing: true }));
 
     const reportData: SymptomReportData = {
@@ -109,6 +109,7 @@ export function useSymptomAnalysis() {
         isAnalyzing: false,
         currentStep: SYMPTOM_CHECKER_STEPS.RESULTS,
       }));
+      onComplete?.(result);
     }, 1500);
   }, [state]);
 

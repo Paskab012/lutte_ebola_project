@@ -13,7 +13,8 @@ import { RiskGauge } from '@/components/ui/RiskGauge';
 import { Badge } from '@/components/ui/Badge';
 import { LocationIcon, PhoneIcon, AlertIcon, ArrowRightIcon, ChevronIcon, CheckIcon, ShieldIcon, SearchIcon } from '@/components/icons';
 import { EMERGENCY_CONTACTS } from '@/constants/riskLevels';
-import type { RiskLevel } from '@/types';
+import { useSubmitReport } from '@/hooks/useSubmitReport';
+import type { RiskAssessment, RiskLevel } from '@/types';
 
 // ── Icons for step nav ──────────────────────────────────────────
 function StepIcon({ step, size = 16 }: { step: number; size?: number }) {
@@ -108,16 +109,28 @@ export function SymptomChecker() {
   const t  = useTranslations('symptomChecker');
   const tc = useTranslations('common');
   const {
-    state, toggleSymptom, updateField, nextStep, prevStep, runAnalysis, resetAnalysis,
+    state, reportData, toggleSymptom, updateField, nextStep, prevStep, runAnalysis, resetAnalysis,
   } = useSymptomAnalysis();
   const geo = useGeolocation();
+  const submitReport = useSubmitReport();
 
   const stepLabels = [t('stepSymptoms'), t('stepRiskFactors'), t('stepPersonalInfo'), t('stepResults')];
   const selectedProvince = EASTERN_CONGO_PROVINCES.find((p) => p.id === state.province);
 
   function handleAnalyze() {
     if (geo.coordinates) updateField('coordinates', geo.coordinates);
-    runAnalysis();
+    runAnalysis((assessment: RiskAssessment) => {
+      submitReport.mutate({
+        symptoms: reportData.selectedSymptoms,
+        contactWithInfected: reportData.contactWithInfected,
+        contactWithAnimals: reportData.contactWithAnimals,
+        travelToAffectedArea: reportData.travelToAffectedArea,
+        durationDays: reportData.durationDays,
+        profileVisibility: reportData.personalInfo.profileVisibility,
+        location: reportData.location,
+        riskAssessment: assessment,
+      });
+    });
   }
 
   const riskLabelKey = (state.riskAssessment?.level ?? 'low') as RiskLevel;
@@ -525,6 +538,31 @@ export function SymptomChecker() {
                     </p>
                   </div>
                 )}
+
+                {/* Submission status */}
+                <div className={cn(
+                  'flex items-center gap-2.5 px-4 py-3 rounded-xl text-xs font-semibold mb-5 border transition-all duration-300',
+                  submitReport.isPending
+                    ? 'bg-bg-darker border-border text-text-muted'
+                    : submitReport.isSuccess
+                      ? 'bg-success/8 border-success/25 text-success-light'
+                      : submitReport.isError
+                        ? 'bg-bg-darker border-border text-text-muted'
+                        : 'hidden'
+                )}>
+                  {submitReport.isPending && (
+                    <><span className="w-3 h-3 rounded-full border-2 border-text-muted/30 border-t-text-muted animate-spin shrink-0" />
+                    Transmission au système de surveillance…</>
+                  )}
+                  {submitReport.isSuccess && (
+                    <><CheckIcon size={13} className="shrink-0" />
+                    Données transmises au système de surveillance épidémiologique</>
+                  )}
+                  {submitReport.isError && (
+                    <><span className="shrink-0">⚠</span>
+                    Hors-ligne — données sauvegardées localement</>
+                  )}
+                </div>
 
                 <div className="flex justify-center">
                   <button

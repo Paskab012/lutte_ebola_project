@@ -80,5 +80,5 @@ export const apiClient = new ApiClient(APP_CONFIG.apiBaseUrl);
 export async function submitReport(
   data: SubmitReportRequest
 ): Promise<ApiResponse<SubmitReportResponse>> {
-  return apiClient.post<SubmitReportResponse>('/reports', data);
+  return apiClient.post<SubmitReportResponse>('/symptom-submissions', data);
 }

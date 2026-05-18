@@ -1,7 +1,7 @@
 export const APP_CONFIG = {
   name: 'Lutte Ebola',
   description: 'Ensemble contre Ebola — Protégeons nos communautés',
-  apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:8000/api',
+  apiBaseUrl: process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:3001/api/v1',
   version: '1.0.0',
 } as const;
 
